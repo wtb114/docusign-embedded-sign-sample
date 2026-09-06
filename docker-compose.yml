@@ -1,0 +1,22 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        # Override if your user is not 1000:1000
+        #   docker compose build --build-arg UID=$(id -u) --build-arg GID=$(id -g)
+        UID: 1000
+        GID: 1000
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - bundle:/bundle
+    env_file:
+      - .env
+    stdin_open: true
+    tty: true
+
+volumes:
+  bundle:

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <title><%= t("app.name") %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="<%= t('app.tagline') %>">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  </head>
+
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <%= link_to root_path, class: "brand" do %>
+          <span class="brand-mark">S</span>
+          <span><%= t("app.name") %></span>
+        <% end %>
+
+        <% if Docusign::Gateway.mock? %>
+          <span class="badge mock" title="<%= t('mode.mock_hint') %>">
+            <span class="dot"></span><%= t("mode.mock") %>
+          </span>
+        <% end %>
+
+        <span class="topbar-spacer"></span>
+
+        <nav class="locale-switch" aria-label="<%= t('locale.label') %>">
+          <% I18n.available_locales.each do |locale| %>
+            <%= link_to locale_label(locale), locale_url(locale),
+                  aria: { current: (locale == I18n.locale).to_s },
+                  hreflang: locale %>
+          <% end %>
+        </nav>
+      </header>
+
+      <main>
+        <% flash.each do |type, message| %>
+          <div class="flash <%= type %>" role="alert"><%= message %></div>
+        <% end %>
+
+        <%= yield %>
+      </main>
+
+      <footer class="footer">
+        <%= t("app.tagline") %>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+<div class="page-head">
+  <h1><%= t(".heading") %></h1>
+  <p><%= t(".subheading") %></p>
+</div>
+
+<% if @documents.empty? %>
+  <div class="card">
+    <div class="empty">
+      <h2><%= t(".empty_title") %></h2>
+      <p><%= t(".empty_body") %></p>
+      <%= link_to t(".new"), new_document_path, class: "btn" %>
+    </div>
+  </div>
+<% else %>
+  <div class="actions" style="margin-top: 0; margin-bottom: 16px;">
+    <%= link_to t(".new"), new_document_path, class: "btn" %>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th><%= t(".col_title") %></th>
+            <th><%= t(".col_signer") %></th>
+            <th><%= t(".col_status") %></th>
+            <th><%= t(".col_created") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @documents.each do |document| %>
+            <tr>
+              <td class="title-cell" data-label="<%= t('.col_title') %>">
+                <%= link_to document.title, document %>
+              </td>
+              <td data-label="<%= t('.col_signer') %>"><%= document.signer_name %></td>
+              <td data-label="<%= t('.col_status') %>"><%= status_badge(document) %></td>
+              <td class="muted" data-label="<%= t('.col_created') %>">
+                <%= l document.created_at, format: :long %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,102 @@
+ja:
+  app:
+    name: "電子署名サンプル"
+    tagline: "DocuSign の埋め込み署名を、開始から取り込みまで。"
+
+  mode:
+    mock: "モックモード"
+    mock_hint: "DocuSign の資格情報なしで動作中"
+
+  status:
+    signed: "署名済み"
+    pending: "署名待ち"
+    unsigned: "未署名"
+
+  documents:
+    index:
+      heading: "書類"
+      subheading: "PDF をアップロードし、画面から離れずに署名して、署名済み PDF を受け取る。"
+      new: "書類を登録"
+      empty_title: "書類がまだありません"
+      empty_body: "登録すると署名フローを開始できます。"
+      col_title: "タイトル"
+      col_signer: "署名者"
+      col_status: "状態"
+      col_created: "登録日時"
+    new:
+      heading: "書類の登録"
+      subheading: "署名者はアプリ内の DocuSign 署名画面で署名します。"
+      submit: "登録する"
+      back: "キャンセル"
+      title_placeholder: "業務委託契約書"
+      signer_name_placeholder: "山田 太郎"
+      signer_email_placeholder: "taro@example.com"
+      file_hint: "PDF のみ"
+    show:
+      signer: "署名者"
+      status: "状態"
+      source_pdf: "元の PDF"
+      envelope_id: "Envelope ID"
+      signed_at: "署名日時"
+      signed_pdf: "署名済み PDF"
+      download: "ダウンロード"
+      sign: "署名する"
+      back: "一覧へ戻る"
+      not_attached: "未添付"
+
+  mock_docusign:
+    show:
+      heading: "DocuSign 署名画面"
+      badge: "モック"
+      body: "これは DocuSign の署名画面の代役です。%{flag} のときだけ表示されます。本番では DocuSign のドメイン上の画面へ遷移します。"
+      envelope_id: "Envelope ID"
+      return_url: "戻り先 (return_url)"
+      sign: "署名する"
+      cancel: "キャンセル"
+
+  flash:
+    document_created: "書類を登録しました。"
+    signing_completed: "署名が完了しました。"
+    not_completed_yet: "DocuSign 側でまだ完了扱いになっていません。少し待ってから再度お試しください。"
+    no_signed_pdf: "署名済みの PDF がまだありません。"
+
+  docusign:
+    events:
+      cancel: "署名がキャンセルされました。必要に応じて再度実行してください。"
+      decline: "署名が拒否されました。"
+      timeout: "署名セッションがタイムアウトしました。もう一度お試しください。"
+      identity_failed: "署名者の本人確認に失敗しました。"
+      unknown: "署名時にエラーが発生しました。(event=%{event})"
+    errors:
+      already_signed: "この書類はすでに署名が完了しています。"
+      pdf_missing: "署名対象の PDF が添付されていません。"
+      no_pending_signature: "署名待ちのレコードがありません。"
+      create_failed: "DocuSign への署名依頼に失敗しました。"
+      fetch_failed: "DocuSign からの署名結果の取得に失敗しました。"
+      mock_pdf_missing: "モックの PDF が見つかりません (envelope_id=%{envelope_id})。"
+      unexpected_pdf_format: "DocuSign から予期しない形式の PDF が返却されました (%{klass})。"
+
+  locale:
+    label: "言語"
+
+  activerecord:
+    models:
+      document: 書類
+      signature: 署名
+    attributes:
+      document:
+        title: タイトル
+        signer_name: 署名者の氏名
+        signer_email: 署名者のメールアドレス
+        file: PDF ファイル
+      signature:
+        external_envelope_id: Envelope ID
+        external_recipient_id: Recipient ID
+        signed_at: 署名日時
+        status: 状態
+    errors:
+      models:
+        document:
+          attributes:
+            file:
+              not_pdf: "は PDF を指定してください"

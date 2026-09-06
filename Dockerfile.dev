@@ -1,0 +1,27 @@
+# Development / verification image. The production Dockerfile is the one Rails generated.
+FROM ruby:3.4
+
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y build-essential libsqlite3-dev libyaml-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Run as a non-root user so the bind mount does not fill up with root-owned files.
+# 1000:1000 matches the first user on most Linux and WSL installs; override with
+#   docker compose build --build-arg UID=$(id -u) --build-arg GID=$(id -g)
+ARG UID=1000
+ARG GID=1000
+RUN groupadd -g ${GID} app || true && \
+    useradd -u ${UID} -g ${GID} -m -s /bin/bash app || true && \
+    mkdir -p /bundle /app && chown -R ${UID}:${GID} /bundle /app
+
+WORKDIR /app
+
+ENV BUNDLE_PATH=/bundle \
+    BUNDLE_APP_CONFIG=/bundle \
+    RAILS_ENV=development
+
+USER ${UID}:${GID}
+
+EXPOSE 3000
+
+CMD ["bin/rails", "server", "-b", "0.0.0.0"]

@@ -1,0 +1,46 @@
+<div class="page-head">
+  <h1><%= @document.title %></h1>
+  <p><%= status_badge(@document) %></p>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <dl class="detail">
+      <dt><%= t(".signer") %></dt>
+      <dd>
+        <%= @document.signer_name %>
+        <span class="muted">&lt;<%= @document.signer_email %>&gt;</span>
+      </dd>
+
+      <dt><%= t(".source_pdf") %></dt>
+      <dd>
+        <% if @document.file.attached? %>
+          <%= link_to @document.file.filename,
+                rails_blob_path(@document.file, disposition: "inline") %>
+        <% else %>
+          <span class="muted"><%= t(".not_attached") %></span>
+        <% end %>
+      </dd>
+
+      <% if @signature %>
+        <dt><%= t(".envelope_id") %></dt>
+        <dd><code><%= @signature.external_envelope_id %></code></dd>
+      <% end %>
+
+      <% if (completed = @document.completed_signature) %>
+        <dt><%= t(".signed_at") %></dt>
+        <dd><%= l completed.signed_at, format: :long %></dd>
+
+        <dt><%= t(".signed_pdf") %></dt>
+        <dd><%= link_to t(".download"), download_document_path(@document) %></dd>
+      <% end %>
+    </dl>
+  </div>
+</div>
+
+<div class="actions">
+  <% unless @document.signed? %>
+    <%= button_to t(".sign"), sign_document_path(@document), class: "btn" %>
+  <% end %>
+  <%= link_to t(".back"), documents_path, class: "btn secondary" %>
+</div>

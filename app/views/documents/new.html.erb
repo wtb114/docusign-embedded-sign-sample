@@ -1,0 +1,46 @@
+<div class="page-head">
+  <h1><%= t(".heading") %></h1>
+  <p><%= t(".subheading") %></p>
+</div>
+
+<%= form_with model: @document, local: true do |f| %>
+  <% if @document.errors.any? %>
+    <div class="errors" role="alert">
+      <ul>
+        <% @document.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="field">
+        <%= f.label :title %>
+        <%= f.text_field :title, placeholder: t(".title_placeholder"), autofocus: true %>
+      </div>
+
+      <div class="field">
+        <%= f.label :signer_name %>
+        <%= f.text_field :signer_name, placeholder: t(".signer_name_placeholder") %>
+      </div>
+
+      <div class="field">
+        <%= f.label :signer_email %>
+        <%= f.email_field :signer_email, placeholder: t(".signer_email_placeholder") %>
+      </div>
+
+      <div class="field">
+        <%= f.label :file %>
+        <%= f.file_field :file, accept: "application/pdf" %>
+        <span class="hint"><%= t(".file_hint") %></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <%= f.submit t(".submit"), class: "btn" %>
+    <%= link_to t(".back"), documents_path, class: "btn secondary" %>
+  </div>
+<% end %>

@@ -1,0 +1,106 @@
+en:
+  app:
+    name: "Embedded Signing"
+    tagline: "DocuSign embedded signing, end to end."
+
+  mode:
+    mock: "Mock mode"
+    mock_hint: "Running without DocuSign credentials."
+
+  status:
+    signed: "Signed"
+    pending: "Awaiting signature"
+    unsigned: "Not started"
+
+  documents:
+    index:
+      heading: "Documents"
+      subheading: "Upload a PDF, sign it in place, and get the signed copy back."
+      new: "New document"
+      empty_title: "No documents yet"
+      empty_body: "Create one to start a signing flow."
+      col_title: "Title"
+      col_signer: "Signer"
+      col_status: "Status"
+      col_created: "Created"
+    new:
+      heading: "New document"
+      subheading: "The signer receives the document in an embedded DocuSign session."
+      submit: "Create document"
+      back: "Cancel"
+      title_placeholder: "Service agreement"
+      signer_name_placeholder: "Jane Doe"
+      signer_email_placeholder: "jane@example.com"
+      file_hint: "PDF only."
+    show:
+      signer: "Signer"
+      status: "Status"
+      source_pdf: "Source PDF"
+      envelope_id: "Envelope ID"
+      signed_at: "Signed at"
+      signed_pdf: "Signed PDF"
+      download: "Download"
+      sign: "Sign this document"
+      back: "Back to documents"
+      not_attached: "Not attached"
+
+  mock_docusign:
+    show:
+      heading: "DocuSign signing session"
+      badge: "Mock"
+      body: "This screen stands in for the DocuSign hosted signing session. It appears only while %{flag} is set. In production the signer is redirected to DocuSign's own domain."
+      envelope_id: "Envelope ID"
+      return_url: "Return URL"
+      sign: "Sign"
+      cancel: "Cancel"
+
+  flash:
+    document_created: "Document created."
+    signing_completed: "Signing completed."
+    not_completed_yet: "DocuSign has not marked this envelope as completed yet. Try again in a moment."
+    no_signed_pdf: "There is no signed PDF for this document yet."
+
+  docusign:
+    events:
+      cancel: "Signing was cancelled. Start it again when you are ready."
+      decline: "The signer declined to sign."
+      timeout: "The signing session timed out. Please try again."
+      identity_failed: "Identity verification failed for the signer."
+      unknown: "Signing failed. (event=%{event})"
+    errors:
+      already_signed: "This document has already been signed."
+      pdf_missing: "No PDF is attached to this document."
+      no_pending_signature: "There is no signature request waiting to be completed."
+      create_failed: "Could not create the signing request in DocuSign."
+      fetch_failed: "Could not retrieve the signing result from DocuSign."
+      mock_pdf_missing: "The mock PDF for envelope %{envelope_id} could not be found."
+      unexpected_pdf_format: "DocuSign returned the signed PDF in an unexpected format (%{klass})."
+
+  locale:
+    label: "Language"
+
+  activerecord:
+    models:
+      document: "Document"
+      signature: "Signature"
+    attributes:
+      document:
+        title: "Title"
+        signer_name: "Signer name"
+        signer_email: "Signer email"
+        file: "PDF file"
+      signature:
+        external_envelope_id: "Envelope ID"
+        external_recipient_id: "Recipient ID"
+        signed_at: "Signed at"
+        status: "Status"
+    errors:
+      models:
+        document:
+          attributes:
+            file:
+              not_pdf: "must be a PDF"
+
+  time:
+    formats:
+      long: "%B %-d, %Y at %H:%M"

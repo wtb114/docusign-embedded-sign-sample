@@ -1,0 +1,28 @@
+<div class="page-head">
+  <h1>
+    <%= t(".heading") %>
+    <span class="badge mock"><span class="dot"></span><%= t(".badge") %></span>
+  </h1>
+</div>
+
+<div class="note">
+  <%= t(".body", flag: "DOCUSIGN_MOCK=true") %>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <dl class="detail">
+      <dt><%= t(".envelope_id") %></dt>
+      <dd><code><%= @envelope_id %></code></dd>
+
+      <dt><%= t(".return_url") %></dt>
+      <dd><code><%= @return_url %></code></dd>
+    </dl>
+  </div>
+</div>
+
+<div class="actions">
+  <%= button_to t(".sign"), complete_mock_docusign_path(@envelope_id),
+        params: { return_url: @return_url }, class: "btn" %>
+  <%= link_to t(".cancel"), @cancel_url, class: "btn danger" %>
+</div>
