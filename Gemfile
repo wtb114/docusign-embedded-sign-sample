@@ -53,7 +53,7 @@ group :development do
 end
 
 # Official Ruby SDK for the DocuSign eSignature API
-gem "docusign_esign", "~> 3.26"
+gem "docusign_esign", "~> 7.0"
 
 # Locale data (date formats, validation messages) for non-English locales
 gem "rails-i18n", "~> 8.0"
