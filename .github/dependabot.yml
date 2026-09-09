@@ -1,12 +1,21 @@
 version: 2
+
+# open-pull-requests-limit: 0 switches off routine version-update pull requests,
+# which keeps this repository quiet.
+#
+# Dependabot *security* updates are a separate feature, enabled in the repository
+# settings rather than here, and are unaffected: a real advisory still opens a
+# pull request. The trade-off is deliberate — no noise for ordinary version
+# bumps, still a signal when something is actually vulnerable.
 updates:
   - package-ecosystem: bundler
     directory: "/"
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 0
 
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
       interval: weekly
+    open-pull-requests-limit: 0
