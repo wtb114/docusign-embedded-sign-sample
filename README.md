@@ -2,6 +2,8 @@
 
 *English | [日本語](README.ja.md)*
 
+[![CI](https://github.com/wtb114/docusign-embedded-sign-sample/actions/workflows/ci.yml/badge.svg)](https://github.com/wtb114/docusign-embedded-sign-sample/actions/workflows/ci.yml)
+
 Upload a PDF, sign it **without leaving the application**, and store the signed
 copy back in your own system — the full DocuSign embedded signing round trip.
 
@@ -105,6 +107,39 @@ app/
     └── error.rb                 error types and structured API logging
 config/locales/                  en.yml / ja.yml
 ```
+
+
+## Tests
+
+```bash
+docker compose run --rm web bundle exec rspec
+```
+
+29 examples across the models, the signing workflow and the full HTTP round trip,
+including the case where a forged `signing_complete` event must **not** mark a
+document as signed.
+
+The suite pins `RAILS_ENV=test` and forces `Docusign::Gateway.mock?`, so a test
+run can never reach the real DocuSign API and needs no credentials.
+
+## CI
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and pull request.
+
+| Job | What it runs |
+|---|---|
+| RSpec | the suite above, against SQLite |
+| RuboCop | `rubocop-rails-omakase` |
+| Security | Brakeman, plus bundler-audit against the Ruby Advisory Database |
+
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) is a deployment
+template: build the image, push it to ECR, roll an ECS service, then wait for the
+service to stabilise. Two things worth pointing out:
+
+- It authenticates through **OIDC**, not long-lived access keys
+- The role ARN comes from a secret, so the **AWS account id never appears in the repository**
+
+It is `workflow_dispatch` only, because it cannot succeed until the AWS side exists.
 
 ## Scope
 

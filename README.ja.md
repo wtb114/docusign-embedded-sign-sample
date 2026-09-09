@@ -106,6 +106,38 @@ app/
 config/locales/                  en.yml / ja.yml
 ```
 
+
+## テスト
+
+```bash
+docker compose run --rm web bundle exec rspec
+```
+
+モデル・署名フロー・HTTP の一周を通した 29 例。`signing_complete` イベントを
+偽装しても書類が署名済みにならないことの確認も含みます。
+
+`RAILS_ENV=test` を固定し、`Docusign::Gateway.mock?` を強制しているため、
+**テスト実行が実際の DocuSign に到達することはありません**。資格情報も不要です。
+
+## CI
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) が push と Pull Request で動きます。
+
+| ジョブ | 内容 |
+|---|---|
+| RSpec | 上記のテスト（SQLite） |
+| RuboCop | `rubocop-rails-omakase` |
+| Security | Brakeman と、Ruby Advisory Database に対する bundler-audit |
+
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) はデプロイのテンプレートです。
+イメージをビルドして ECR に push し、ECS サービスを入れ替えて安定するまで待ちます。
+2点補足します。
+
+- 長期のアクセスキーではなく **OIDC** で認証する
+- ロール ARN を Secrets から取るので、**AWS アカウント ID がリポジトリに現れない**
+
+AWS 側の準備が無いと成功しないため、トリガーは `workflow_dispatch` のみにしています。
+
 ## 制限
 
 サンプルとして読みやすさを優先し、意図的に外している点です。

@@ -86,8 +86,8 @@ module Docusign
 
       DocuSign_eSign::EnvelopeDefinition.new(
         emailSubject: subject,
-        documents:    [document],
-        recipients:   DocuSign_eSign::Recipients.new(signers: [build_signer(signer)]),
+        documents:    [ document ],
+        recipients:   DocuSign_eSign::Recipients.new(signers: [ build_signer(signer) ]),
         status:       "sent"
       )
     end
@@ -99,7 +99,7 @@ module Docusign
       signer.recipient_id   = config.recipient_id.to_s
       signer.routing_order  = config.routing_order.to_s
       signer.client_user_id = config.client_user_id.to_s
-      signer.tabs           = DocuSign_eSign::Tabs.new(textTabs: [placeholder_tab(config)])
+      signer.tabs           = DocuSign_eSign::Tabs.new(textTabs: [ placeholder_tab(config) ])
       signer
     end
 

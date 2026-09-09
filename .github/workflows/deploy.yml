@@ -1,0 +1,85 @@
+# Deployment template: build the image, push it to ECR, roll the ECS service.
+#
+# It is wired to workflow_dispatch only, because it cannot succeed until the AWS
+# side exists. Running it without the configuration below simply fails at the
+# credentials step; nothing runs on push.
+#
+# Required repository configuration
+#   Secrets   AWS_ROLE_ARN     IAM role the OIDC provider is allowed to assume
+#   Variables AWS_REGION       e.g. ap-northeast-1
+#             ECR_REPOSITORY   ECR repository name
+#             ECS_CLUSTER      ECS cluster name
+#             ECS_SERVICE      ECS service name
+#
+# The role ARN is a secret rather than a literal on purpose: it carries the AWS
+# account id, which is not something a public repository should advertise.
+
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+# Never let two deployments overlap.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  id-token: write   # required to request the OIDC token
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Short-lived credentials via OIDC. No long-lived access keys are stored
+      # in the repository.
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: github-actions-deploy
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Tagging with the commit SHA as well as latest is what makes a rollback
+      # possible: latest alone leaves no way back to a known-good image.
+      - name: Resolve image tag
+        id: image
+        run: echo "tag=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.ecr-login.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:${{ steps.image.outputs.tag }}
+            ${{ steps.ecr-login.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Roll the ECS service
+        run: |
+          aws ecs update-service \
+            --cluster "${{ vars.ECS_CLUSTER }}" \
+            --service "${{ vars.ECS_SERVICE }}" \
+            --force-new-deployment \
+            --query 'service.serviceName' --output text
+
+      # Without this the job goes green the moment the API call returns, even if
+      # every new task then crashes on startup.
+      - name: Wait for the service to stabilise
+        run: |
+          aws ecs wait services-stable \
+            --cluster "${{ vars.ECS_CLUSTER }}" \
+            --services "${{ vars.ECS_SERVICE }}"

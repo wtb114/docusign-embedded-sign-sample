@@ -13,8 +13,10 @@ module Docusign
   #   completed?(envelope_id)                                            -> Boolean
   #   signed_pdf(envelope_id)                                            -> String (bytes)
   module Gateway
+    # Tests always use the mock: a test run must never be able to reach DocuSign,
+    # no matter what the local environment happens to be configured with.
     def self.mock?
-      ENV["DOCUSIGN_MOCK"] == "true"
+      Rails.env.test? || ENV["DOCUSIGN_MOCK"] == "true"
     end
 
     def self.build

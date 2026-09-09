@@ -23,8 +23,10 @@ class Signature < ApplicationRecord
 
   scope :active, -> { where(revoked_at: nil) }
 
+  # Revoked either explicitly by status, or implicitly by carrying a revoked_at.
+  # super is the predicate the enum generates.
   def revoked?
-    status_revoked? || revoked_at.present?
+    super || revoked_at.present?
   end
 
   # Soft delete, so the history of signature requests stays auditable.

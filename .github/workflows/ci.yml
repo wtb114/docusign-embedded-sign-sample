@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# A new push to the same branch supersedes the run in progress.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: RSpec
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          # Ruby version comes from .ruby-version
+          bundler-cache: true
+
+      - name: Prepare the test database
+        run: bin/rails db:prepare
+
+      # The suite forces RAILS_ENV=test and Docusign::Gateway.mock?, so it can
+      # never reach the real DocuSign API. No credentials are required.
+      - name: Run RSpec
+        run: bundle exec rspec
+
+  lint:
+    name: RuboCop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Lint Ruby files
+        run: bundle exec rubocop --parallel
+
+  security:
+    name: Security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      # EOLRails is excluded on purpose: it fails on a calendar date rather than
+      # on anything in this code, so it would turn the build red on its own.
+      - name: Static analysis (Brakeman)
+        run: bundle exec brakeman --no-pager --quiet -x EOLRails
+
+      - name: Dependency audit (bundler-audit)
+        run: bundle exec bundle-audit check --update

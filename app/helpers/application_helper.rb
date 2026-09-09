@@ -21,11 +21,11 @@ module ApplicationHelper
   # Maps a document to its status badge (CSS modifier + translated label).
   def document_status(document)
     if document.signed?
-      [:signed, t("status.signed")]
+      [ :signed, t("status.signed") ]
     elsif document.pending_signature
-      [:pending, t("status.pending")]
+      [ :pending, t("status.pending") ]
     else
-      [:unsigned, t("status.unsigned")]
+      [ :unsigned, t("status.unsigned") ]
     end
   end
 

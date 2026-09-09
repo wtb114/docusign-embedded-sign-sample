@@ -2,7 +2,9 @@
 
 class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
-  allow_browser versions: :modern
+  # Request specs send no User-Agent, and this gate is a production concern rather
+  # than something the specs should have to work around.
+  allow_browser versions: :modern, unless: -> { Rails.env.test? }
 
   around_action :switch_locale
 

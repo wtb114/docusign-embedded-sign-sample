@@ -17,8 +17,10 @@ class MockDocusignController < ApplicationController
   def complete
     Docusign::MockGateway.new.complete!(params[:envelope_id])
 
-    redirect_to url_with_event(params[:return_url], Docusign::Event::Types::SIGNING_COMPLETE),
-      allow_other_host: true
+    # No allow_other_host here: return_url arrives as a request parameter, and
+    # this stand-in must not become an open redirect. Rails refuses anything
+    # that is not on this host, which is all the mock ever needs.
+    redirect_to url_with_event(params[:return_url], Docusign::Event::Types::SIGNING_COMPLETE)
   end
 
   private def url_with_event(return_url, event)
