@@ -34,7 +34,7 @@ jobs:
     environment: production
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Short-lived credentials via OIDC. No long-lived access keys are stored
       # in the repository.
